@@ -7,13 +7,20 @@ int empty(struct queue_t * q) {
 }
 
 void enqueue(struct queue_t * q, struct pcb_t * proc) {
-	/* TODO: put a new process to queue [q] */	
+	/* TODO: put a new process to queue [q] */
+	q[q -> size] = 	proc;
+	q -> size++;
 }
 
 struct pcb_t * dequeue(struct queue_t * q) {
 	/* TODO: return a pcb whose prioprity is the highest
 	 * in the queue [q] and remember to remove it from q
 	 * */
-	return NULL;
+	struct pcb_t * temp = q[0];
+	for (int i = 0; i < q -> size - 1; i++) {
+		q[i] = q[i + 1];
+	}
+	q[size - 1] = NULL;
+	return temp;
 }
 
