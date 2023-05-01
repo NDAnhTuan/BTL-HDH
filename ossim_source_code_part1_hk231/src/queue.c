@@ -21,6 +21,7 @@ struct pcb_t * dequeue(struct queue_t * q) {
 		q[i] = q[i + 1];
 	}
 	q[size - 1] = NULL;
+	q -> size--;
 	return temp;
 }
 
