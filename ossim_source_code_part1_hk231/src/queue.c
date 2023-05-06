@@ -8,23 +8,6 @@ int empty(struct queue_t * q) {
 
 void enqueue(struct queue_t * q, struct pcb_t * proc) {
 	/* TODO: put a new process to queue [q] */
-	// if (empty(q)) {
-	// 	q -> proc[0] == proc;
-	// 	q -> size++;
-	// 	return;
-	// }
-	// int idx = 0;
-	// for (int i = 0; i < q -> size; i++) {
-	// 	if (q -> proc[i] -> priority > proc -> priority) {
-	// 		break;
-	// 	}
-	// 	idx++;
-	// }
-	// q -> size++;
-	// for (int j = q -> size - 1; j > idx; j--) {
-	// 	q -> proc[j] = q -> proc[j - 1];
-	// }
-	// q -> proc[idx] = proc;
 	q -> proc[q -> size] = proc;
 	q -> size++;
 }
@@ -33,7 +16,7 @@ struct pcb_t * dequeue(struct queue_t * q) {
 	/* TODO: return a pcb whose prioprity is the highest
 	 * in the queue [q] and remember to remove it from q
 	 * */
-	if (empty(q)) return;
+	if (empty(q)) return NULL;
 	struct pcb_t * temp = q -> proc[0];
 	for (int i = 0; i < q -> size - 1; i++) {
 		q -> proc[i] = q -> proc[i + 1];
