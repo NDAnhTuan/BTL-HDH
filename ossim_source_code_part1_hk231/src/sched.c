@@ -4,6 +4,7 @@
 #include <pthread.h>
 
 #include <stdlib.h>
+#include <stdbool.h>
 #include <stdio.h>
 static struct queue_t ready_queue;
 static struct queue_t run_queue;
@@ -54,7 +55,7 @@ struct pcb_t * get_mlq_proc(void) {
 	 * */
 	 bool flag=false;
 	 for (int i=prio;i<MAX_PRIO;i++){
-		if (!empty(mlq_ready_queue[i])&& queue_slot[i]>0) {
+		if (!empty(&mlq_ready_queue[i])&& queue_slot[i]>0) {
 			prio=i;
 			flag=true;
 			break;
@@ -64,7 +65,7 @@ struct pcb_t * get_mlq_proc(void) {
 		prio=0;
 		return NULL;
 	}
-	proc=dequeue(mlq_ready_queue[prio]);
+	proc=dequeue(&mlq_ready_queue[prio]);
 	queue_slot[prio]--;
 	if (queue_slot[prio]==0){
 		queue_slot[prio]=MAX_PRIO-prio;
