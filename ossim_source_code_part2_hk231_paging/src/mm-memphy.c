@@ -6,7 +6,7 @@
 
 #include "mm.h"
 #include <stdlib.h>
-
+#include <stdio.h>   //ADDING BY STUDENT
 /*
  *  MEMPHY_mv_csr - move MEMPHY cursor
  *  @mp: memphy struct
@@ -14,6 +14,9 @@
  */
 int MEMPHY_mv_csr(struct memphy_struct *mp, int offset)
 {
+#ifdef CHECK        
+        printf("MEMPHY_mv_csr - move MEMPHY cursor\n");
+#endif
    int numstep = 0;
 
    mp->cursor = 0;
@@ -112,6 +115,9 @@ int MEMPHY_write(struct memphy_struct * mp, int addr, BYTE data)
 int MEMPHY_format(struct memphy_struct *mp, int pagesz)
 {
     /* This setting come with fixed constant PAGESZ */
+#ifdef CHECK        
+        printf("MEMPHY_format\n");
+#endif
     int numfp = mp->maxsz / pagesz;
     struct framephy_struct *newfst, *fst;
     int iter = 0;
@@ -137,8 +143,12 @@ int MEMPHY_format(struct memphy_struct *mp, int pagesz)
     return 0;
 }
 
+
 int MEMPHY_get_freefp(struct memphy_struct *mp, int *retfpn)
 {
+#ifdef CHECK        
+        printf("MEMPHY_get_freefp\n");
+#endif
    struct framephy_struct *fp = mp->free_fp_list;
 
    if (fp == NULL)
@@ -157,11 +167,22 @@ int MEMPHY_get_freefp(struct memphy_struct *mp, int *retfpn)
 
 int MEMPHY_dump(struct memphy_struct * mp)
 {
-    /*TODO dump memphy contnt mp->storage 
+    /*TODO dump memphy content mp->storage 
      *     for tracing the memory content
      */
-
-    return 0;
+    printf("\nMEMPHY_DUMP EXCEPT ADDRESS HAS VALUE ZERO");
+    printf("\n--------------------\n");
+    char s1[] = "RAM";
+    char s2[] = "VALUE";
+    printf("%6s | %6s\n", s1, s2);
+    printf("--------------------\n");
+    for (int i = 0; i < mp->maxsz; i++) {
+        if (mp->storage[i] != 0)
+            printf("%08x: %d\n", i ,mp->storage[i]);
+    }
+   printf("--------------------\n");
+   printf("\n");
+   return 0;
 }
 
 int MEMPHY_put_freefp(struct memphy_struct *mp, int fpn)
