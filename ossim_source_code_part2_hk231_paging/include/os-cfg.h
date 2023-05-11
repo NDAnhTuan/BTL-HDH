@@ -10,5 +10,7 @@
 //#define MMDBG 1
 #define IODUMP 1
 #define PAGETBL_DUMP 1
-
+//Define by student
+#define CHECK
+//End
 #endif

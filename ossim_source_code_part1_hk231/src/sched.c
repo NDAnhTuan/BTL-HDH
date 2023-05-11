@@ -6,9 +6,16 @@
 #include <stdlib.h>
 #include <stdbool.h>
 #include <stdio.h>
+
+#ifndef MLQ_SCHED
+#define MLQ_SCHED
+#define MAX_PRIO 140
+#endif
+
 static struct queue_t ready_queue;
 static struct queue_t run_queue;
 static pthread_mutex_t queue_lock;
+
 
 #ifdef MLQ_SCHED
 static struct queue_t mlq_ready_queue[MAX_PRIO];
@@ -113,7 +120,7 @@ struct pcb_t * get_proc(void) {
 
 void put_proc(struct pcb_t * proc) {
 	pthread_mutex_lock(&queue_lock);
-	enqueue(&ready_queue, proc);
+	enqueue(&run_queue, proc);
 	pthread_mutex_unlock(&queue_lock);
 }
 
