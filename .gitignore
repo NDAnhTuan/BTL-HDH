@@ -4,9 +4,6 @@
 # BlueJ files
 *.ctxt
 
-# Mobile Tools for Java (J2ME)
-.mtj.tmp/
-
 # Package Files #
 *.war
 *.nar
@@ -22,3 +19,9 @@
 /.idea/
 /ant/
 /.vscode/
+
+# output files
+os
+
+# object files
+/obj/

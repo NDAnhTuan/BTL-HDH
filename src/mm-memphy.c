@@ -6,7 +6,7 @@
 
 #include "mm.h"
 #include <stdlib.h>
-#include <stdio.h>   //ADDING BY STUDENT
+#include <stdio.h>  
 /*
  *  MEMPHY_mv_csr - move MEMPHY cursor
  *  @mp: memphy struct
@@ -142,7 +142,6 @@ int MEMPHY_format(struct memphy_struct *mp, int pagesz)
 
     return 0;
 }
-
 
 int MEMPHY_get_freefp(struct memphy_struct *mp, int *retfpn)
 {
