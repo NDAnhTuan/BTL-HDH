@@ -22,10 +22,12 @@ int init_pte(uint32_t *pte,
 	if (pre != 0)
 	{
 		if (swp == 0)
-		{ // Non swap ~ page online
+		{
+			// Non swap ~ page online
 			if (fpn == 0)
+			{
 				return -1; // Invalid setting
-
+			}
 			/* Valid setting with FPN */
 			SETBIT(*pte, PAGING_PTE_PRESENT_MASK);
 			CLRBIT(*pte, PAGING_PTE_SWAPPED_MASK);
@@ -34,7 +36,8 @@ int init_pte(uint32_t *pte,
 			SETVAL(*pte, fpn, PAGING_PTE_FPN_MASK, PAGING_PTE_FPN_LOBIT);
 		}
 		else
-		{ // page swapped
+		{
+			// page swapped
 			SETBIT(*pte, PAGING_PTE_PRESENT_MASK);
 			SETBIT(*pte, PAGING_PTE_SWAPPED_MASK);
 			CLRBIT(*pte, PAGING_PTE_DIRTY_MASK);
@@ -107,7 +110,9 @@ int vmap_page_range(struct pcb_t *caller,			// process call
 	while (pgit < pgnum)
 	{
 		if (!fpit->fp_next)
+		{
 			break;
+		}
 		fpit = fpit->fp_next;
 		pte_set_fpn(&pgtbl[pgn + pgit], fpit->fpn);
 		enlist_pgn_node(&caller->mm->fifo_pgn, pgn + pgit);

@@ -61,8 +61,9 @@ struct vm_area_struct *get_vma_by_num(struct mm_struct *mm, int vmaid)
 	while (vmait < vmaid)
 	{
 		if (pvma == NULL)
+		{
 			return NULL;
-
+		}
 		pvma = pvma->vm_next;
 	}
 	return pvma;
@@ -189,11 +190,10 @@ int pg_getpage(struct mm_struct *mm, int pgn, int *fpn, struct pcb_t *caller)
 	uint32_t pte = mm->pgd[pgn];
 
 	if (!PAGING_PAGE_PRESENT(pte))
-	{ /* Page is not online, make it actively living */
+	{
+		/* Page is not online, make it actively living */
 		int vicpgn, swpfpn;
-
 		// uint32_t vicpte;
-
 		int tgtfpn = PAGING_SWP(pte); // the target frame storing our variable
 
 		/* TODO: Play with your paging theory here */
@@ -263,8 +263,9 @@ int pg_setval(struct mm_struct *mm, int addr, BYTE value, struct pcb_t *caller)
 
 	/* Get the page to MEMRAM, swap from MEMSWAP if needed */
 	if (pg_getpage(mm, pgn, &fpn, caller) != 0)
+	{
 		return -1; /* invalid page access */
-
+	}
 	int phyaddr = (fpn << PAGING_ADDR_FPN_LOBIT) + off;
 	MEMPHY_write(caller->mram, phyaddr, value);
 	return 0;
@@ -324,8 +325,9 @@ int __write(struct pcb_t *caller, int vmaid, int rgid, int offset, BYTE value)
 	struct vm_area_struct *cur_vma = get_vma_by_num(caller->mm, vmaid);
 
 	if (currg == NULL || cur_vma == NULL) /* Invalid memory identify */
+	{
 		return -1;
-
+	}
 	pg_setval(caller->mm, currg->rg_start + offset, value, caller);
 	return 0;
 }
@@ -405,14 +407,15 @@ int validate_overlap_vm_area(struct pcb_t *caller, int vmaid, int vmastart, int 
 	struct vm_area_struct *vma = caller->mm->mmap;
 	while (vma != NULL)
 	{
-		if (INCLUDE(vma->vm_start, vma->vm_end, vmastart, vmaend))
+		// if (INCLUDE(vma->vm_start, vma->vm_end, vmastart, vmaend)) return -1;
+		if ((vmastart < vma->vm_start && vmaend > vma->vm_start))
 		{
 			return -1;
 		}
-		// if ((vmastart < vma->vm_start && vmaend > vma->vm_start)) return -1;
 		vma = vma->vm_next;
 	}
 	/* TODO validate the planned memory area is not overlapped */
+
 	return 0;
 }
 
@@ -440,9 +443,10 @@ int inc_vma_limit(struct pcb_t *caller, int vmaid, int inc_sz)
 	/* The obtained vm area (only)
 	 * now will be alloc real ram region */
 	cur_vma->vm_end += inc_sz;
-	if (vm_map_ram(caller, area->rg_start, area->rg_end,
-				   old_end, incnumpage, newrg) < 0)
+	if (vm_map_ram(caller, area->rg_start, area->rg_end, old_end, incnumpage, newrg) < 0)
+	{
 		return -1; /* Map the memory to MEMRAM */
+	}
 	enlist_vm_freerg_list(caller->mm, newrg);
 	return 0;
 }
@@ -457,7 +461,9 @@ int find_victim_page(struct mm_struct *mm, int *retpgn)
 	/* TODO: Implement the theorical mechanism to find the victim page */
 	struct pgn_t *pg = mm->fifo_pgn;
 	if (pg == NULL)
+	{
 		return -1;
+	}
 	*retpgn = pg->pgn;
 	mm->fifo_pgn = pg->pg_next;
 	free(pg);
@@ -487,7 +493,8 @@ int get_free_vmrg_area(struct pcb_t *caller, int vmaid, int size, struct vm_rg_s
 	while (rgit != NULL)
 	{
 		if (rgit->rg_start + size <= rgit->rg_end)
-		{ /* Current region has enough space */
+		{ 
+			/* Current region has enough space */
 			newrg->rg_start = rgit->rg_start;
 			newrg->rg_end = rgit->rg_start + size;
 
@@ -497,11 +504,12 @@ int get_free_vmrg_area(struct pcb_t *caller, int vmaid, int size, struct vm_rg_s
 				rgit->rg_start = rgit->rg_start + size;
 			}
 			else
-			{ /*Use up all space, remove current node */
-				/*Clone next rg node */
+			{ 
+				/* Use up all space, remove current node */
+				/* Clone next rg node */
 				struct vm_rg_struct *nextrg = rgit->rg_next;
 
-				/*Cloning */
+				/* Cloning */
 				if (nextrg != NULL)
 				{
 					rgit->rg_start = nextrg->rg_start;
@@ -510,7 +518,7 @@ int get_free_vmrg_area(struct pcb_t *caller, int vmaid, int size, struct vm_rg_s
 					free(nextrg);
 				}
 				else
-				{								   /*End of free list */
+				{								   /* End of free list */
 					rgit->rg_start = rgit->rg_end; // dummy, size 0 region
 					rgit->rg_next = NULL;
 				}
@@ -523,8 +531,9 @@ int get_free_vmrg_area(struct pcb_t *caller, int vmaid, int size, struct vm_rg_s
 	}
 
 	if (newrg->rg_start == -1) // new region not found
+	{
 		return -1;
-
+	}
 	return 0;
 }
 // #endif

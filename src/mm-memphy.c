@@ -36,11 +36,13 @@ int MEMPHY_mv_csr(struct memphy_struct *mp, int offset)
 int MEMPHY_seq_read(struct memphy_struct *mp, int addr, BYTE *value)
 {
 	if (mp == NULL)
+	{
 		return -1;
-
+	}
 	if (!mp->rdmflg)
+	{
 		return -1; /* Not compatible mode for sequential read */
-
+	}
 	MEMPHY_mv_csr(mp, addr);
 	*value = (BYTE)mp->storage[addr];
 
@@ -56,13 +58,17 @@ int MEMPHY_seq_read(struct memphy_struct *mp, int addr, BYTE *value)
 int MEMPHY_read(struct memphy_struct *mp, int addr, BYTE *value)
 {
 	if (mp == NULL)
+	{
 		return -1;
-
+	}
 	if (mp->rdmflg)
+	{
 		*value = mp->storage[addr];
+	}
 	else /* Sequential access device */
+	{
 		return MEMPHY_seq_read(mp, addr, value);
-
+	}
 	return 0;
 }
 
@@ -97,13 +103,17 @@ int MEMPHY_seq_write(struct memphy_struct *mp, int addr, BYTE value)
 int MEMPHY_write(struct memphy_struct *mp, int addr, BYTE data)
 {
 	if (mp == NULL)
+	{
 		return -1;
-
+	}
 	if (mp->rdmflg)
+	{
 		mp->storage[addr] = data;
+	}
 	else /* Sequential access device */
+	{
 		return MEMPHY_seq_write(mp, addr, data);
-
+	}
 	return 0;
 }
 
@@ -119,8 +129,9 @@ int MEMPHY_format(struct memphy_struct *mp, int pagesz)
 	int iter = 0;
 
 	if (numfp <= 0)
+	{
 		return -1;
-
+	}
 	/* Init head of free framephy list */
 	fst = malloc(sizeof(struct framephy_struct));
 	fst->fpn = iter;
@@ -198,7 +209,7 @@ int init_memphy(struct memphy_struct *mp, int max_size, int randomflg)
 	MEMPHY_format(mp, PAGING_PAGESZ);
 
 	mp->rdmflg = (randomflg != 0) ? 1 : 0;
-	if (!mp->rdmflg) /* Not Random access device, then it serial device*/
+	if (!mp->rdmflg) /* Not Random access device, but serial device */
 	{
 		mp->cursor = 0;
 	}
