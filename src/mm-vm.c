@@ -405,8 +405,10 @@ int validate_overlap_vm_area(struct pcb_t *caller, int vmaid, int vmastart, int 
 	struct vm_area_struct *vma = caller->mm->mmap;
 	while (vma != NULL)
 	{
-		if (OVERLAP(vma->vm_start, vma->vm_end, vmastart, vmaend))
+		if (INCLUDE(vma->vm_start, vma->vm_end, vmastart, vmaend))
+		{
 			return -1;
+		}
 		// if ((vmastart < vma->vm_start && vmaend > vma->vm_start)) return -1;
 		vma = vma->vm_next;
 	}

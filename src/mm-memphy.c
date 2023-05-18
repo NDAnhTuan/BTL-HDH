@@ -171,7 +171,6 @@ int MEMPHY_dump(struct memphy_struct *mp)
 			continue;
 		}
 		printf("%08x: %d\n", i, mp->storage[i]);
-		printf("hehe\n");
 	}
 	return 0;
 }

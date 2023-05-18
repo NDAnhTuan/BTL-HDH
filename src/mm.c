@@ -123,7 +123,7 @@ int vmap_page_range(struct pcb_t *caller,			// process call
 			return -1;
 		}
 		pte_set_swap(&pgtbl[pgn + pgit], 0, swapoff);
-		// enlist_pgn_node(&caller->mm->fifo_pgn, pgn+pgit);
+		enlist_pgn_node(&caller->mm->fifo_pgn, pgn + pgit);
 		pgit++;
 	}
 	/* Tracking for later page replacement activities (if needed)
@@ -382,7 +382,7 @@ int print_pgtbl(struct pcb_t *caller, uint32_t start, uint32_t end)
 	{
 		printf("%08ld: %08x\n", pgit * sizeof(uint32_t), caller->mm->pgd[pgit]);
 	}
-	
+
 	return 0;
 }
 
