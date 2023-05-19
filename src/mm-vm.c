@@ -493,7 +493,7 @@ int get_free_vmrg_area(struct pcb_t *caller, int vmaid, int size, struct vm_rg_s
 	while (rgit != NULL)
 	{
 		if (rgit->rg_start + size <= rgit->rg_end)
-		{ 
+		{
 			/* Current region has enough space */
 			newrg->rg_start = rgit->rg_start;
 			newrg->rg_end = rgit->rg_start + size;
@@ -504,7 +504,7 @@ int get_free_vmrg_area(struct pcb_t *caller, int vmaid, int size, struct vm_rg_s
 				rgit->rg_start = rgit->rg_start + size;
 			}
 			else
-			{ 
+			{
 				/* Use up all space, remove current node */
 				/* Clone next rg node */
 				struct vm_rg_struct *nextrg = rgit->rg_next;
