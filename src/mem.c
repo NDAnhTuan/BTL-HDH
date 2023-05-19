@@ -65,9 +65,8 @@ static struct trans_table_t *get_trans_table(
 static int translate(
 	addr_t virtual_addr,   // Given virtual address
 	addr_t *physical_addr, // Physical address to be returned
-	struct pcb_t *proc)
-{ // Process uses given virtual address
-
+	struct pcb_t *proc)	   // Process uses given virtual address
+{
 	/* Offset of the virtual address */
 	addr_t offset = get_offset(virtual_addr);
 	offset++;

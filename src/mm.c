@@ -90,12 +90,12 @@ int vmap_page_range(struct pcb_t *caller,			// process call
 					int pgnum,						// num of mapping page
 					struct framephy_struct *frames, // list of the mapped frames
 					struct vm_rg_struct *ret_rg)	// return mapped region, the real mapped fp
-{													// no guarantee all given pages are mapped
+													// no guarantee all given pages are mapped
+{
 	// uint32_t * pte = malloc(sizeof(uint32_t));
 	struct framephy_struct *fpit = malloc(sizeof(struct framephy_struct));
 	// int  fpn;
 	int pgit = 0;
-	int pgn = PAGING_PGN(addr);
 
 	ret_rg->rg_end = ret_rg->rg_start = addr; // at least the very first space is usable
 
@@ -106,21 +106,27 @@ int vmap_page_range(struct pcb_t *caller,			// process call
 	 *      [addr to addr + pgnum*PAGING_PAGESZ
 	 *      in page table caller->mm->pgd[]
 	 */
-	ret_rg->rg_end = addr + pgnum * PAGING_PAGESZ;
 	while (pgit < pgnum)
 	{
+		int pageAddr = addr + pgit * PAGING_PAGESZ;
+		int pgn = PAGING_PGN(pageAddr);
+		if (fpit == NULL)
+		{
+			return -1;
+		}
 		if (!fpit->fp_next)
 		{
 			break;
 		}
 		fpit = fpit->fp_next;
-		pte_set_fpn(&pgtbl[pgn + pgit], fpit->fpn);
-		enlist_pgn_node(&caller->mm->fifo_pgn, pgn + pgit);
+		pte_set_fpn(&pgtbl[pgn], fpit->fpn);
+		enlist_pgn_node(&caller->mm->fifo_pgn, pgn);
 		pgit++;
 	}
 	/* don't have enough frame in ram => take from swap*/
 	while (pgit < pgnum)
 	{
+		int pgn = PAGING_PGN(addr);
 		int swapoff = 0;
 		if (MEMPHY_get_freefp(caller->active_mswp, &swapoff) != 0)
 		{
@@ -131,6 +137,7 @@ int vmap_page_range(struct pcb_t *caller,			// process call
 		enlist_pgn_node(&caller->mm->fifo_pgn, pgn + pgit);
 		pgit++;
 	}
+	ret_rg->rg_end = addr + pgnum * PAGING_PAGESZ;
 	/* Tracking for later page replacement activities (if needed)
 	 * Enqueue new usage page */
 	return 0;
